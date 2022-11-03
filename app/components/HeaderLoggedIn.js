@@ -1,7 +1,17 @@
-import React, { useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 import { Link } from "react-router-dom"
+import DispatchContext from "../DispatchContext"
+
 
 function HeaderLoggedIn(props) {
+  const appDispatch = useContext(DispatchContext)
+
+  function handleLogout(){
+   appDispatch({type:"logout", loggedn:false})
+   localStorage.removeItem("complexAppToken")
+   localStorage.removeItem("complexAppUsername")
+   localStorage.removeItem("complexAppAvatar")
+  }
   return (
     <div className="flex-row my-3 my-md-0">
     <Link to="#" className="text-white mr-2 header-search-icon">
@@ -12,12 +22,12 @@ function HeaderLoggedIn(props) {
       <span className="chat-count-badge text-white"> </span>
     </span>
     <Link to="#" className="mr-2">
-      <img className="small-header-avatar" src="https://gravatar.com/avatar/b9408a09298632b5151200f3449434ef?s=128" />
+      <img className="small-header-avatar" src={localStorage.getItem("complexAppAvatar")} />
     </Link>
     <Link className="btn btn-sm btn-success mr-2" to="/create-post">
       Create Post
     </Link>
-    <button className="btn btn-sm btn-secondary" onClick={()=> props.setLoggedIn(false)}>
+    <button className="btn btn-sm btn-secondary" onClick={handleLogout}>
       Sign Out
     </button>
   </div>
