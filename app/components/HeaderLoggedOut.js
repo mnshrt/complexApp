@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react"
 import { useState } from "react"
 import Axios from "axios"
-import ExampleContext from "../ExampleContext"
+
 import DispatchContext from "../DispatchContext"
 function HeaderLoggedOut(props) {
     const [username, setUsername] = useState("")
@@ -13,10 +13,7 @@ function HeaderLoggedOut(props) {
      try{
      const response = await Axios.post("/login",{username, password})
      if(response.data){
-        localStorage.setItem("complexAppToken",response.data.token)
-        localStorage.setItem("complexAppUsername",response.data.username)
-        localStorage.setItem("complexAppAvatar",response.data.avatar)
-        appDispatch({type:"logout", loggedn:true})
+        appDispatch({type:"login", data:response.data})
      }else{
         console.log("incorrect username and password");
      }

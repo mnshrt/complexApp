@@ -14,6 +14,8 @@ import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from "./components/FlashMessages"
 import DispatchContext from "./DispatchContext"
 import StateContext from"./StateContext"
+import { useImmerReducer } from "use-immer"
+import { useEffect } from "react"
 
 Axios.defaults.baseURL ='http://localhost:8080'
 
@@ -21,41 +23,56 @@ Axios.defaults.baseURL ='http://localhost:8080'
 function Main() {
   const initialState={
     loggedIn:Boolean(localStorage.getItem("complexAppToken")),
-    flashMessages:[]
+    flashMessages:[],
+    user:{
+      token:localStorage.getItem("complexAppToken"),
+      username:localStorage.getItem("complexAppUsername"),
+      avatar:localStorage.getItem("complexAppAvatar"),
+    }
   }
-  function ourReducer(state, action){
+  function ourReducer(draft, action){
     switch (action.type){
       case "login":
-        return {loggedIn:true, flashMessages: state.flashMessages}
+         draft.loggedIn=true;
+         draft.user=action.data
+         return;
         case "logout":
-          return {loggedIn:false, flashMessages: state.flashMessages};
+           draft.loggedIn=false
+           return;
         case "flashMessage":
-          return {loggedIn: state.loggedIn, flashMessages: state.flashMessages.concat(action.value)}
+           draft.flashMessages.push(action.value)
+           return
     }
   }  
-  const [state, dispatch] = useReducer(ourReducer, initialState)
-  dispatch
-  const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("complexAppToken")))
-  const [flashMessages, setFlashMessages] =  useState([])
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState)
 
-  function addFlashMessage(msg){
-     setFlashMessages(prev=> prev.concat(msg))
-  }
+  useEffect(()=>{
+    if(state.loggedIn){
+      localStorage.setItem("complexAppToken",state.user.token)
+      localStorage.setItem("complexAppUsername",state.user.username)
+      localStorage.setItem("complexAppAvatar",state.user.avatar)
+    }else{
+      localStorage.removeItem("complexAppToken")
+      localStorage.removeItem("complexAppUsername")
+      localStorage.removeItem("complexAppAvatar")
+    }
+  },[state.loggedIn])
+
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
-    <BrowserRouter>
-    <FlashMessages messages={state.flashMessages}/>
-      <Header  />
-      <Routes>
-      <Route path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
-        <Route path="/about-us" element={<About/>}/>
-        <Route path="/terms" element={<Terms/>}/>
-        <Route path="/create-post" element={<CreatePost />} />
-        <Route path="/post/:id" element={<ViewSinglePost/>}/>
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+        <BrowserRouter>
+        <FlashMessages messages={state.flashMessages}/>
+          <Header  />
+          <Routes>
+          <Route path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
+            <Route path="/about-us" element={<About/>}/>
+            <Route path="/terms" element={<Terms/>}/>
+            <Route path="/create-post" element={<CreatePost />} />
+            <Route path="/post/:id" element={<ViewSinglePost/>}/>
+          </Routes>
+          <Footer />
+        </BrowserRouter>
     </DispatchContext.Provider>
     </StateContext.Provider>
   )
