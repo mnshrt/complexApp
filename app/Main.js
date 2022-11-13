@@ -17,6 +17,8 @@ import StateContext from"./StateContext"
 import { useImmerReducer } from "use-immer"
 import { useEffect } from "react"
 import Profile from "./components/Profile"
+import EditPost from "./components/EditPost"
+import NotFound from "./components/NotFound"
 
 Axios.defaults.baseURL ='http://localhost:8080'
 
@@ -66,12 +68,15 @@ function Main() {
         <FlashMessages messages={state.flashMessages}/>
           <Header  />
           <Routes>
-          <Route path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
+            
             <Route path="/about-us" element={<About/>}/>
             <Route path="/terms" element={<Terms/>}/>
             <Route path="/create-post" element={<CreatePost />} />
             <Route path="/post/:id" element={<ViewSinglePost/>}/>
+            <Route path="/post/:id/edit" element={<EditPost/>}/>
             <Route path="/profile/:username/*" element={<Profile/>}/>
+            <Route exact path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
+            <Route path="*" element={<NotFound/>}/>
           </Routes>
           <Footer />
         </BrowserRouter>
