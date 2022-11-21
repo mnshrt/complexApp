@@ -19,6 +19,7 @@ import { useEffect } from "react"
 import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
 import NotFound from "./components/NotFound"
+import Search from "./components/Search"
 
 Axios.defaults.baseURL ='http://localhost:8080'
 
@@ -44,7 +45,13 @@ function Main() {
            return;
         case "flashMessage":
            draft.flashMessages.push(action.value)
-           return
+           return;
+        case "openSearch":
+          draft.isSearchOpen = true
+          return
+        case "closeSearch":
+          draft.isSearchOpen = false
+          return
     }
   }  
   const [state, dispatch] = useImmerReducer(ourReducer, initialState)
@@ -78,6 +85,7 @@ function Main() {
             <Route exact path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>
+          {state.isSearchOpen?<Search/>:''}
           <Footer />
         </BrowserRouter>
     </DispatchContext.Provider>
