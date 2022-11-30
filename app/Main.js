@@ -10,6 +10,7 @@ import Terms from "./components/Terms"
 import Home from "./components/Home"
 import CreatePost from "./components/CreatePost"
 import Axios from "axios"
+import { CSSTransition } from "react-transition-group"
 import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from "./components/FlashMessages"
 import DispatchContext from "./DispatchContext"
@@ -28,6 +29,7 @@ function Main() {
   const initialState={
     loggedIn:Boolean(localStorage.getItem("complexAppToken")),
     flashMessages:[],
+    isSearchOpen:false,
     user:{
       token:localStorage.getItem("complexAppToken"),
       username:localStorage.getItem("complexAppUsername"),
@@ -67,7 +69,7 @@ function Main() {
       localStorage.removeItem("complexAppAvatar")
     }
   },[state.loggedIn])
-
+  console.log(state);
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
@@ -85,7 +87,10 @@ function Main() {
             <Route exact path="/" element={state.loggedIn?<Home/>:<HomeGuest/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>
-          {state.isSearchOpen?<Search/>:''}
+          <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
+          <Search/>
+          </CSSTransition>
+          {/* {state.isSearchOpen && <Search/>} */}
           <Footer />
         </BrowserRouter>
     </DispatchContext.Provider>
