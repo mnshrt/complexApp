@@ -83,13 +83,14 @@ function Search() {
         <div className="container container--narrow py-3">
          <div className={"circle-loader "+(state.show=="loading"?"circle-loader--visible":"")}></div>
           <div className={"live-search-results "+(state.show=="results"?"live-search-results--visible":"")}>
-            <div className="list-group shadow-sm">
+            {Boolean(state.results.length) && (
+              <div className="list-group shadow-sm">
               <div className="list-group-item active"><strong>Search Results</strong> ({state.results.length} {state.results.length>1? "inputs": "input"} found)</div>
               {state.results.map(post=>{
         const date = new Date(post.createdDate)
         const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
         return (
-          <Link key={post._id} to={`/post/${post._id}`} className="list-group-item list-group-item-action">
+          <Link onClick={()=>appDispatch({type:"closeSearch"})} key={post._id} to={`/post/${post._id}`} className="list-group-item list-group-item-action">
           <img className="avatar-tiny" src={post.author.avatar} /> <strong>{post.title}</strong>{" "}
           <span className="text-muted small">by {post.author.username} on {dateFormatted}</span>
           </Link>
@@ -98,7 +99,9 @@ function Search() {
  
 
             </div>
-          </div>
+            )}
+            {!Boolean(state.results.length)&& (<p className="alert alert-danger text-center shadow-sm">Sorry we could not find any results for that search</p>)}
+            </div>
         </div>
       </div>
     </div>

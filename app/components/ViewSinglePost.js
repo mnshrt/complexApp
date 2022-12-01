@@ -30,7 +30,7 @@ function ViewSinglePost() {
       return ()=> ourRequest.cancel()
     }
 fetchPosts()
-  }, [])
+  }, [id])
   
 if(!isLoading && !post){
   return <NotFound/>
