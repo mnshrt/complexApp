@@ -2,36 +2,36 @@ import React, { useEffect, useState } from "react"
 import Axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import LoadingDotsIcon from "./LoadingDotsIcon";
-import Post from "./Post";
-function ProfilePosts() {
+function ProfileFollow({action}) {
 const {username} = useParams()
     const [isLoading, setIsLoading] = useState(true)
-    const [posts, setPosts] = useState([])
+    const [followData, setFollowData] = useState([])
 useEffect(() => {
-  async function fetchPosts(){
+  async function fetchFollowData(){
     try{
-        const response = await Axios.get(`/profile/${username}/posts`)
+        const response = await Axios.get(`/profile/${username}/${action}`)
         setIsLoading(false)
-        setPosts(response.data)
+        setFollowData(response.data)
     }catch(e){
         console.log("there was a problemfirst")
     }    
   }
-  fetchPosts()
+  fetchFollowData()
 
 }, [username])
 
     if(isLoading) return <LoadingDotsIcon/>
   return (
     <div className="list-group">
-       {posts.map(post=>{
-
+       {followData.map((data,index)=>{
         return (
-<Post key={post._id} post={post} noAuthor={true}/>
+            <Link key={index} to={`/${action}/${data.username}`} className="list-group-item list-group-item-action">
+            <img className="avatar-tiny" src={data.avatar} /> {data.username}
+            </Link>
         )
        })}
     </div>
   )
 }
 
-export default ProfilePosts
+export default ProfileFollow
