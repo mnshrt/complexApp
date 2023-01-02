@@ -21,7 +21,7 @@ import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
 import NotFound from "./components/NotFound"
 import Search from "./components/Search"
-
+import Chat from "./components/Chat"
 Axios.defaults.baseURL ='http://localhost:8080'
 
 
@@ -30,6 +30,7 @@ function Main() {
     loggedIn:Boolean(localStorage.getItem("complexAppToken")),
     flashMessages:[],
     isSearchOpen:false,
+    isChatOpen:false,
     user:{
       token:localStorage.getItem("complexAppToken"),
       username:localStorage.getItem("complexAppUsername"),
@@ -53,6 +54,12 @@ function Main() {
           return
         case "closeSearch":
           draft.isSearchOpen = false
+          return
+        case "toggleChat":
+          draft.isChatOpen = !draft.isChatOpen
+          return
+        case "closeChat":
+          draft.isChatOpen=false
           return
     }
   }  
@@ -91,6 +98,7 @@ function Main() {
           <Search/>
           </CSSTransition>
           {/* {state.isSearchOpen && <Search/>} */}
+          <Chat/>
           <Footer />
         </BrowserRouter>
     </DispatchContext.Provider>
