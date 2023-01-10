@@ -4,9 +4,11 @@ import { useImmer } from 'use-immer'
 import io from "socket.io-client"
 import DispatchContext from '../DispatchContext'
 import StateContext from '../StateContext'
+import { Link } from 'react-router-dom'
 
 const socket = io("http://localhost:8080")
 function Chat() {
+    const chatLog = useRef(null)
     const chatField = useRef(null)
     const appState= useContext(StateContext)
     const appDispatch = useContext(DispatchContext)
@@ -17,6 +19,7 @@ function Chat() {
     useEffect(() => {
       if(appState.isChatOpen){
        chatField.current.focus()
+       appDispatch({type:"clearUnreadChatCount"})
       }
     }, [appState.isChatOpen])
     useEffect(()=>{
@@ -31,6 +34,13 @@ function Chat() {
       setState(draft=>{draft.fieldValue=value}
       )
     }
+    useEffect(() => {
+      chatLog.current.scrollTop = chatLog.current.scrollHeight
+      if(state.chatMessages.length && !appState.isChatOpen){
+        appDispatch({type:"incrementUnreadChatCount"})
+      }
+    }, [state.chatMessages])
+    
     function handleSubmit(e){
       e.preventDefault();
       //send message to chat server
@@ -48,26 +58,26 @@ function Chat() {
         <i className="fas fa-times-circle"></i>
       </span>
     </div>
-    <div id="chat" className="chat-log">
+    <div id="chat" className="chat-log" ref={chatLog}>
       {state.chatMessages.map((message,index)=>{
         if(message.username === appState.user.username){
           return (
-               <div className="chat-self">
+               <div key={index} className="chat-self">
         <div className="chat-message">
           <div className="chat-message-inner">{message.message}</div>
         </div>
         <img className="chat-avatar avatar-tiny" src={message.avatar} />
       </div>
           )}
-          return ( <div className="chat-other">
-        <a href="#">
+          return ( <div key={index} className="chat-other">
+        <Link to={`/profile/${message.username}`}>
           <img className="avatar-tiny" src={message.avatar} />
-        </a>
+        </Link>
         <div className="chat-message">
           <div className="chat-message-inner">
-            <a href="#">
-              <strong>{message.username}</strong>
-            </a>
+            <Link to={`/profile/${message.username}`}>
+              <strong>{message.username}: </strong>
+            </Link>
             {message.message}
           </div>
         </div>

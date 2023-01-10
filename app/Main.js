@@ -31,6 +31,7 @@ function Main() {
     flashMessages:[],
     isSearchOpen:false,
     isChatOpen:false,
+    unreadChatCount:0,
     user:{
       token:localStorage.getItem("complexAppToken"),
       username:localStorage.getItem("complexAppUsername"),
@@ -60,6 +61,12 @@ function Main() {
           return
         case "closeChat":
           draft.isChatOpen=false
+          return
+        case "incrementUnreadChatCount":
+          draft.unreadChatCount++
+          return;
+        case "clearUnreadChatCount":
+          draft.unreadChatCount=0
           return
     }
   }  
